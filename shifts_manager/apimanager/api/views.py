@@ -21,12 +21,24 @@ def all_shifts(request):
             return Response(serializer.errors)
 
 
-@api_view()
+@api_view(['GET', 'PUT', 'DELETE'])
 def shift(request, pk):
     try:
         _shift = Shift.objects.get(pk=pk)
     except Shift.DoesNotExist:
         return Response({"Error: Shift not found."}, status=status.HTTP_404_NOT_FOUND)
 
-    serializer = ShiftSerializer(_shift)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = ShiftSerializer(_shift)
+        return Response(serializer.data)
+
+    if request.method == 'PUT':
+        serializer = ShiftSerializer(_shift, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+
+    if request.method == 'GET':
+        _shift.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
