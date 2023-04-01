@@ -5,11 +5,20 @@ from .serializer import ShiftSerializer
 from ..models import Shift
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def all_shifts(request):
-    shifts = Shift.objects.order_by('-shift_date')
-    serializer = ShiftSerializer(shifts, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        shifts = Shift.objects.order_by('-shift_date')
+        serializer = ShiftSerializer(shifts, many=True)
+        return Response(serializer.data)
+
+    if request.method == 'POST':
+        serializer = ShiftSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
 
 @api_view()
