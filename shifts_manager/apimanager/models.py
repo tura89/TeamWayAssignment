@@ -24,7 +24,7 @@ class Shift(models.Model):
     worker = models.ForeignKey(Worker, on_delete=models.CASCADE)
     shift_date = models.DateField('Shift Date')
     shift_start = models.CharField(max_length=5, choices=StartTimes.choices)
-    shift_end = models.CharField(max_length=5, choices=EndTimes.choices, null=True)
+    shift_end = models.CharField(max_length=5, choices=EndTimes.choices, blank=True, null=True)
 
     def __str__(self):
         return F"Shift by {self.worker} - {self.worker.name} at {self.shift_date} from {self.shift_start}"
