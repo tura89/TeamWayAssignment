@@ -58,3 +58,21 @@ class ShiftSerializer(serializers.Serializer):
             )
 
         return data
+
+
+class WorkerSerializer(serializers.Serializer):
+    id = serializers.IntegerField(read_only=True)
+    name = serializers.CharField()
+
+    def update(self, instance, validated_data):
+        instance.name = validated_data.get('name', instance.worker_id)
+        instance.save()
+        return instance
+
+    def create(self, validated_data):
+        return Worker.objects.create(**validated_data)
+
+    def validate_name(self, value):
+        if len(value) < 3:
+            raise serializers.ValidationError("Worker name should be at least 4 characters long.")
+        return value
