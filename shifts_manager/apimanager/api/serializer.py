@@ -30,21 +30,21 @@ class ShiftSerializer(serializers.Serializer):
         return value
 
     def validate_shift_start(self, value):
-        if value in Shift.StartTimes.values:
+        if value in Shift.ShiftTimes.values:
             return value
-        raise serializers.ValidationError(F"Start date should be one of: {Shift.StartTimes.values}")
+        raise serializers.ValidationError(F"Start date should be one of: {Shift.ShiftTimes.values}")
 
     def validate_shift_end(self, value):
-        if not value or value in Shift.EndTimes.values:
+        if not value or value in Shift.ShiftTimes.values:
             return value
-        raise serializers.ValidationError(F"End date should be one of: {Shift.StartTimes.values}, or left unspecified")
+        raise serializers.ValidationError(F"End date should be one of: {Shift.ShiftTimes.values}, or left unspecified")
 
     def validate(self, data):
         start_time = datetime.datetime.strptime(data['shift_start'], "%H:%M")
         end_time = data.get('shift_end')
         if end_time:
             end_time = datetime.datetime.strptime(end_time, "%H:%M")
-            if end_time and start_time + datetime.timedelta(hours=8) != end_time:
+            if end_time and (start_time + datetime.timedelta(hours=8)).time() != end_time.time():
                 raise serializers.ValidationError(
                     F"End date should be 8 hours ahead of start date, or left unspecified"
                 )

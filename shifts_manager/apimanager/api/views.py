@@ -37,8 +37,10 @@ def shift(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
-    if request.method == 'GET':
+    if request.method == 'DELETE':
         _shift.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
@@ -75,8 +77,10 @@ def worker(request, pk):
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
+        else:
+            return Response(serializer.errors)
 
-    if request.method == 'GET':
+    if request.method == 'DELETE':
         _worker.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

@@ -23,12 +23,16 @@ class ApiManagerTestCase(APITestCase):
         response = self.client.post(reverse('all-workers'), data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+        content = response.json()
+        self.assertEqual(content, {'id': 2, 'name': 'John Doe'})
+
     def test_worker_create_blank_name(self):
         invalid_data = {
             "name": ""
         }
         url = reverse('all-workers')
         response = self.client.post(url, invalid_data, format='json')
+
         content = response.json()
         contains_error_message = "field may not be blank" in content['name'][0]
         self.assertTrue(contains_error_message)
@@ -57,3 +61,134 @@ class ApiManagerTestCase(APITestCase):
 
         content = response.json()
         self.assertEqual(content, {'id': 1, 'name': 'Bill Gates'})
+
+    def test_get_worker_shifts(self):
+        response = self.client.get(reverse('all-shifts-by-worker', args=(self.worker.id,)), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            [{'id': 1, 'worker_id': 1, 'shift_date': '2022-01-01', 'shift_start': '08:00', 'shift_end': '16:00'}]
+        )
+
+    def test_get_all_shifts(self):
+        response = self.client.get(reverse('all-shifts'), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            [{'id': 1, 'worker_id': 1, 'shift_date': '2022-01-01', 'shift_start': '08:00', 'shift_end': '16:00'}]
+        )
+
+    def test_create_shift(self):
+        data = {
+            "worker_id": 1,
+            "shift_date": "2022-05-01",
+            "shift_start": "16:00",
+            "shift_end": "00:00",
+        }
+        response = self.client.post(reverse('all-shifts'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'id': 2, 'worker_id': 1, 'shift_date': '2022-05-01', 'shift_start': '16:00', 'shift_end': '00:00'}
+        )
+
+    def test_cr_shift_bad_worker_id(self):
+        data = {
+            "worker_id": 5,
+            "shift_date": "2022-05-01",
+            "shift_start": "16:00",
+            "shift_end": "00:00",
+        }
+        response = self.client.post(reverse('all-shifts'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'worker_id': ['Worker ID not found']}
+        )
+
+    def test_cr_shift_occupied_date(self):
+        data = {
+            "worker_id": 1,
+            "shift_date": "2022-01-01",
+            "shift_start": "16:00",
+            "shift_end": "00:00",
+        }
+        response = self.client.post(reverse('all-shifts'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'non_field_errors': ['Worker 1 already has a shift on 2022-01-01, ID: 1']}
+        )
+
+    def test_cr_shift_invalid_time(self):
+        data = {
+            "worker_id": 1,
+            "shift_date": "2022-05-01",
+            "shift_start": "05:00",
+            "shift_end": "08:00",
+        }
+        response = self.client.post(reverse('all-shifts'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'shift_start': ["Start date should be one of: ['00:00', '08:00', '16:00']"]}
+        )
+
+    def test_cr_shift_time_mismatch(self):
+        data = {
+            "worker_id": 1,
+            "shift_date": "2022-05-01",
+            "shift_start": "16:00",
+            "shift_end": "16:00",
+        }
+        response = self.client.post(reverse('all-shifts'), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'non_field_errors': ['End date should be 8 hours ahead of start date, or left unspecified']}
+        )
+
+    def test_get_specific_shift(self):
+        response = self.client.get(reverse('shift', args=(self.shift.id,)), format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'id': 1, 'worker_id': 1, 'shift_date': '2022-01-01', 'shift_start': '08:00', 'shift_end': '16:00'}
+        )
+
+    def test_update_shift(self):
+        data = {
+            'worker_id': 1,
+            'shift_date': '2022-05-01',
+            'shift_start': '08:00',
+            'shift_end': '16:00'
+        }
+
+        response = self.client.put(reverse('shift', args=(self.shift.id,)), data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        content = response.json()
+        self.assertEqual(
+            content,
+            {'id': 1, 'worker_id': 1, 'shift_date': '2022-05-01', 'shift_start': '08:00', 'shift_end': '16:00'}
+        )
+
+    def test_delete_shift(self):
+        response = self.client.delete(reverse('shift', args=(self.shift.id,)), format='json')
+        self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
