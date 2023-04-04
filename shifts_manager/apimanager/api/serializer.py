@@ -74,7 +74,7 @@ class WorkerSerializer(serializers.Serializer):
     name = serializers.CharField()
 
     def update(self, instance, validated_data):
-        instance.name = validated_data.get("name", instance.worker_id)
+        instance.name = validated_data.get("name", instance.name)
         instance.save()
         return instance
 

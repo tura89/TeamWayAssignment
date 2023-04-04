@@ -30,13 +30,27 @@ class ApiManagerTestCase(APITestCase):
         contains_error_message = "field may not be blank" in content["name"][0]
         self.assertTrue(contains_error_message)
 
-    def worker_create_short_name(self):
+    def test_worker_create_short_name(self):
         invalid_data = {"name": "J"}
         url = reverse("all-workers")
         response = self.client.post(url, invalid_data, format="json")
         content = response.json()
         contains_error_message = "should be at least" in content["name"][0]
         self.assertTrue(contains_error_message)
+
+    def test_worker_update(self):
+        initial_data = {"name": "Jane Doe"}
+        url = reverse("all-workers")
+        response = self.client.post(url, initial_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        content = response.json()
+        self.assertEqual(content, {'id': 2, 'name': 'Jane Doe'})
+
+        new_data = {"name": "Jill Doe"}
+        url = reverse("worker", args=[content["id"]])
+        response = self.client.put(url, new_data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.json(), {'id': content["id"], 'name': 'Jill Doe'})
 
     def test_get_workers(self):
         response = self.client.get(reverse("all-workers"), format="json")
