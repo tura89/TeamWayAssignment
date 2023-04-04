@@ -6,7 +6,7 @@ class Worker(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return self.name
+        return F"{self.id} - {self.name}"
 
 
 class Shift(models.Model):
@@ -23,4 +23,4 @@ class Shift(models.Model):
     )
 
     def __str__(self):
-        return f"Shift by {self.worker} - {self.worker.name} at {self.shift_date} from {self.shift_start}"
+        return f"Shift by {self.worker.id} - {self.worker.name} at {self.shift_date} from {self.shift_start}"

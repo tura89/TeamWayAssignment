@@ -56,12 +56,14 @@ class ShiftSerializer(serializers.Serializer):
                 raise serializers.ValidationError(
                     f"End date should be 8 hours ahead of start date, or left unspecified"
                 )
+        else:
+            data["shift_end"] = (start_time + datetime.timedelta(hours=8)).time().strftime("%H:%M")
 
         shifts_on_date = Shift.objects.filter(
             shift_date=data["shift_date"], worker_id=data["worker_id"]
         )
 
-        if shifts_on_date:
+        if shifts_on_date and not self.initial_data:
             raise serializers.ValidationError(
                 f"Worker {data['worker_id']} already has a shift on {data['shift_date']}, ID: {shifts_on_date[0].id}"
             )
