@@ -30,6 +30,8 @@ $ sudo docker run -it -p 8000:8000 python-django-app
 The api can now be accessed at http://localhost:8000/api/shifts/
 
 The list of all endpoints is available at http://localhost:8000/api/
+They are read only unless authenticated. To authenticate, use `alex` as both username
+and password in the top right `Log in` menu.
 
 1. api/shifts - lists all shifts in chronological dates. New shifts can be added at this endpoint.
 2. api/shifts/\<int:pk\> - specific shift, where \<int:pk\> is its id. It can be modified or deleted at this endpoint.
@@ -37,14 +39,13 @@ The list of all endpoints is available at http://localhost:8000/api/
 4. api/workers/\<int:pk\> - specific worker, where \<int:pk\> is its id. It can be modified or deleted at this endpoint. 
 5. api/workers/\<int:pk\>/shifts - Same functionality as api/shifts, except shifts are limited to those belonging to worker with the specified id.
 
-To interact with the UI version of the API, log in at http://localhost:8000/admin using `alex` as both username
-and password.
 
-Alternatively, using http://localhost:8000/profile endpoint:
+Using http://localhost:8000/profile endpoint (as well as those above) can be interacted with via postman or by other means:
 
 1. profile/registration/ - to register a new user
-2. profile/login/ - to login as a user and receive token - which can be used to interact with api (ex. via postman)
+2. profile/login/ - to login as a user and receive token - which can be used to interact with api
 3. profile/logout/ - to deactivate the token.
+
 
 <h3> Testing </h3>
 
@@ -58,4 +59,6 @@ To get container name:
 In docker
 ```commandline
 :/code#  python shifts_manager/manage.py test apimanager
+
+:/code#  python shifts_manager/manage.py test profile_app
 ```
