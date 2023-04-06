@@ -29,6 +29,8 @@ $ sudo docker run -it -p 8000:8000 python-django-app
 
 The api can now be accessed at http://localhost:8000/api/shifts/
 
+To log in, use `alex` as both username and passsword
+
 The list of all endpoints is available at http://localhost:8000/api/
 
 1. api/shifts - lists all shifts in chronological dates. New shifts can be added at this endpoint.

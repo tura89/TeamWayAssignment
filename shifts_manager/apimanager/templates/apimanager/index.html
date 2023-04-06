@@ -48,6 +48,7 @@
       <ul class="nav nav-pills nav-stacked">
         <li><a href="/">Shifts</a></li>
         <li><a href="/workers">Workers</a></li>
+        <li><a href="/api/shifts">API</a></li>
       </ul><br>
     </div>
 
@@ -58,7 +59,6 @@
       {% if items %}
         {% for item in items %}
           <h4>{{ item }}</h4>
-<!--          <h5><span class="glyphicon glyphicon-time"></span> Posted at {{ post.post_time }}</h5>-->
           <br>
         {% endfor %}
       {% else %}
