@@ -14,7 +14,7 @@ def all_shifts(request):
         return Response(serializer.data)
 
     if request.method == "POST":
-        serializer = ShiftSerializer(data=request.data)
+        serializer = ShiftSerializer(data=request.data, context={"is_create": True})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)

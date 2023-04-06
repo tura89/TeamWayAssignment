@@ -63,7 +63,7 @@ class ShiftSerializer(serializers.Serializer):
             shift_date=data["shift_date"], worker_id=data["worker_id"]
         )
 
-        if shifts_on_date and not self.initial_data:
+        if list(shifts_on_date) and self.context['is_create']:
             raise serializers.ValidationError(
                 f"Worker {data['worker_id']} already has a shift on {data['shift_date']}, ID: {shifts_on_date[0].id}"
             )

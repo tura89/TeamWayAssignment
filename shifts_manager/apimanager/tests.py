@@ -242,7 +242,16 @@ class ApiManagerTestCase(APITestCase):
         )
 
     def test_delete_shift(self):
+        data = {
+            "worker_id": 1,
+            "shift_date": "2001-01-01",
+            "shift_start": "16:00",
+            "shift_end": "00:00",
+        }
+        response = self.client.post(reverse("all-shifts"), data, format="json")
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
         response = self.client.delete(
-            reverse("shift", args=(self.shift.id,)), format="json"
+            reverse("shift", args=(response.json()['id'],)), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
