@@ -5,5 +5,7 @@ urlpatterns = [
     path("", include("apimanager.urls")),
     path("admin", admin.site.urls),
     path("api/", include("apimanager.api.urls")),
-    path("api-auth", include("rest_framework.urls"))
+
+    path("profile/", include("profile_app.api.urls")),
+    # path("api-auth", include("rest_framework.urls"))
 ]
