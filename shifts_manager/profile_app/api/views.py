@@ -9,7 +9,11 @@ from .serializer import ProfileSerializer
 from .. import models
 
 
-@api_view(['POST', ])
+@api_view(
+    [
+        "POST",
+    ]
+)
 @permission_classes([AllowAny])
 def registration(request):
     """Register new profile."""
@@ -18,22 +22,25 @@ def registration(request):
     if serializer.is_valid():
         profile = serializer.save()
 
-        resp['username'] = profile.username
-        resp['email'] = profile.email
+        resp["username"] = profile.username
+        resp["email"] = profile.email
 
         token = Token.objects.get(user=profile).key
-        resp['token'] = token
+        resp["token"] = token
 
-        resp['message'] = 'Registration Successful'
+        resp["message"] = "Registration Successful"
     else:
         resp = serializer.errors
 
     return Response(resp)
 
 
-@api_view(['POST', ])
+@api_view(
+    [
+        "POST",
+    ]
+)
 @permission_classes([AllowAny])
 def logout_view(request):
     request.user.auth_token.delete()
     return Response(status=status.HTTP_200_OK)
-

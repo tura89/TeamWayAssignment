@@ -11,12 +11,11 @@ from .models import Shift, Worker
 class ApiManagerTestCase(APITestCase):
     def setUp(self):
         self.profile = User.objects.create_user(
-            username="test_user",
-            password="test_pass"
+            username="test_user", password="test_pass"
         )
 
         self.token = Token.objects.get(user__username="test_user")
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+        self.client.credentials(HTTP_AUTHORIZATION="Token " + self.token.key)
 
         self.worker = Worker.objects.create(name="Bill Gates")
         self.shift = Shift.objects.create(
@@ -54,13 +53,13 @@ class ApiManagerTestCase(APITestCase):
         response = self.client.post(url, initial_data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         content = response.json()
-        self.assertEqual(content, {'id': 2, 'name': 'Jane Doe'})
+        self.assertEqual(content, {"id": 2, "name": "Jane Doe"})
 
         new_data = {"name": "Jill Doe"}
         url = reverse("worker", args=[content["id"]])
         response = self.client.put(url, new_data, format="json")
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.json(), {'id': content["id"], 'name': 'Jill Doe'})
+        self.assertEqual(response.json(), {"id": content["id"], "name": "Jill Doe"})
 
     def test_get_workers(self):
         response = self.client.get(reverse("all-workers"), format="json")
@@ -262,6 +261,6 @@ class ApiManagerTestCase(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
         response = self.client.delete(
-            reverse("shift", args=(response.json()['id'],)), format="json"
+            reverse("shift", args=(response.json()["id"],)), format="json"
         )
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)

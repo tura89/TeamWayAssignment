@@ -6,7 +6,7 @@ class Worker(models.Model):
     name = models.CharField(max_length=100)
 
     def __str__(self):
-        return F"{self.id} - {self.name}"
+        return f"{self.id} - {self.name}"
 
 
 class Shift(models.Model):
