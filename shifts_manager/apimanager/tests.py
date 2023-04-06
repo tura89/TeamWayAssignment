@@ -1,6 +1,8 @@
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APITestCase
+from django.contrib.auth.models import User
+from rest_framework.authtoken.models import Token
 
 from .models import Shift, Worker
 
@@ -8,6 +10,14 @@ from .models import Shift, Worker
 # Create your tests here.
 class ApiManagerTestCase(APITestCase):
     def setUp(self):
+        self.profile = User.objects.create_user(
+            username="test_user",
+            password="test_pass"
+        )
+
+        self.token = Token.objects.get(user__username="test_user")
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + self.token.key)
+
         self.worker = Worker.objects.create(name="Bill Gates")
         self.shift = Shift.objects.create(
             worker_id=1, shift_date="2022-01-01", shift_start="08:00", shift_end="16:00"
