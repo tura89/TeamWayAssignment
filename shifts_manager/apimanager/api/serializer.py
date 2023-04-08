@@ -47,6 +47,8 @@ class ShiftSerializer(serializers.Serializer):
     def validate(self, data):
         start_time = datetime.datetime.strptime(data["shift_start"], "%H:%M")
         end_time = data.get("shift_end")
+
+        # make sure end time is start time + 8 hours, or left unspecified
         if end_time:
             end_time = datetime.datetime.strptime(end_time, "%H:%M")
             if (
@@ -61,14 +63,18 @@ class ShiftSerializer(serializers.Serializer):
                 (start_time + datetime.timedelta(hours=8)).time().strftime("%H:%M")
             )
 
-        shifts_on_date = Shift.objects.filter(
+        # if a shift exists, make sure it's a put request,
+        # and it's modifying it on the same date - as opposed to adding a different shift on this date
+        shift_on_date = Shift.objects.filter(
             shift_date=data["shift_date"], worker_id=data["worker_id"]
         )
 
-        if list(shifts_on_date) and self.context["is_create"]:
-            raise serializers.ValidationError(
-                f"Worker {data['worker_id']} already has a shift on {data['shift_date']}, ID: {shifts_on_date[0].id}"
-            )
+        if list(shift_on_date):
+            shift_on_date = list(shift_on_date)[0]
+            if self.context["is_create"] or shift_on_date.id != self.context["shift_id"]:
+                raise serializers.ValidationError(
+                    f"Worker {data['worker_id']} already has a shift on {data['shift_date']}, ID: {shift_on_date.id}"
+                )
 
         return data
 

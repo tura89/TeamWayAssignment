@@ -34,7 +34,7 @@ def shift(request, pk):
         return Response(serializer.data)
 
     if request.method == "PUT":
-        serializer = ShiftSerializer(_shift, data=request.data)
+        serializer = ShiftSerializer(_shift, data=request.data, context={"is_create": False, "shift_id": pk})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
