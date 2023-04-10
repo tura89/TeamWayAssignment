@@ -1,6 +1,7 @@
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from django.shortcuts import get_object_or_404
 
 from ..models import Shift, Worker
 from .serializer import ShiftSerializer, WorkerSerializer
@@ -24,10 +25,7 @@ def all_shifts(request):
 
 @api_view(["GET", "PUT", "DELETE"])
 def shift(request, pk):
-    try:
-        _shift = Shift.objects.get(pk=pk)
-    except Shift.DoesNotExist:
-        return Response({"Error: Shift not found."}, status=status.HTTP_404_NOT_FOUND)
+    _shift = get_object_or_404(Shift, pk=pk)
 
     if request.method == "GET":
         serializer = ShiftSerializer(_shift)
@@ -64,10 +62,7 @@ def all_workers(request):
 
 @api_view(["GET", "PUT", "DELETE"])
 def worker(request, pk):
-    try:
-        _worker = Worker.objects.get(pk=pk)
-    except Worker.DoesNotExist:
-        return Response({"Error: Worker not found."}, status=status.HTTP_404_NOT_FOUND)
+    _worker = get_object_or_404(Worker, pk=pk)
 
     if request.method == "GET":
         serializer = WorkerSerializer(_worker)

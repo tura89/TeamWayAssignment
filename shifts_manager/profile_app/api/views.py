@@ -9,11 +9,7 @@ from .serializer import ProfileSerializer
 from .. import models
 
 
-@api_view(
-    [
-        "POST",
-    ]
-)
+@api_view(["POST",])
 @permission_classes([AllowAny])
 def registration(request):
     """Register new profile."""
@@ -35,11 +31,7 @@ def registration(request):
     return Response(resp)
 
 
-@api_view(
-    [
-        "POST",
-    ]
-)
+@api_view(["POST",])
 @permission_classes([AllowAny])
 def logout_view(request):
     request.user.auth_token.delete()
